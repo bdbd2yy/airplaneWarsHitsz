@@ -2,6 +2,7 @@ package edu.hitsz.application;
 
 import edu.hitsz.aircraft.*;
 import edu.hitsz.bullet.BaseBullet;
+import edu.hitsz.factory.EnemyFactory;
 import edu.hitsz.basic.AbstractFlyingObject;
 
 import javax.swing.*;
@@ -12,11 +13,29 @@ import java.util.List;
 import java.util.Timer;
 import java.util.concurrent.*;
 
+import edu.hitsz.factory.BossEnemyFactory;
+import edu.hitsz.factory.EliteEnemyFactory;
+import edu.hitsz.factory.ElitePlusEnemyFactory;
+import edu.hitsz.factory.EliteProEnemyFactory;
+import edu.hitsz.factory.EnemyFactory;
+import edu.hitsz.factory.MobEnemyFactory;
+
 /**
  * 游戏主面板，游戏启动
  * @author hitsz
  */
 public class Game extends JPanel {
+
+    private static final double MOB_ENEMY_RATE = 0.40;
+    private static final double ELITE_ENEMY_RATE = 0.25;
+    private static final double ELITE_PLUS_ENEMY_RATE = 0.20;
+    private static final int BOSS_SCORE_THRESHOLD = 300;
+
+    private final EnemyFactory mobEnemyFactory;
+    private final EnemyFactory eliteEnemyFactory;
+    private final EnemyFactory elitePlusEnemyFactory;
+    private final EnemyFactory eliteProEnemyFactory;
+    private final EnemyFactory bossEnemyFactory;
 
     private int backGroundTop = 0;
 
@@ -30,6 +49,8 @@ public class Game extends JPanel {
     private final List<BaseBullet> heroBullets;
     private final List<BaseBullet> enemyBullets;
 
+    // boss
+    private boolean bossActive = false;
     //屏幕中出现的敌机最大数量
     private final int enemyMaxNumber = 5;
 
@@ -43,6 +64,7 @@ public class Game extends JPanel {
 
     //当前玩家分数
     private int score = 0;
+    private int nextBossScore = BOSS_SCORE_THRESHOLD;
 
     //游戏结束标志
     private boolean gameOverFlag = false;
@@ -56,6 +78,12 @@ public class Game extends JPanel {
 
         //启动英雄机鼠标监听
         new HeroController(this, heroAircraft);
+
+        mobEnemyFactory = new MobEnemyFactory();
+        eliteEnemyFactory = new EliteEnemyFactory();
+        elitePlusEnemyFactory = new ElitePlusEnemyFactory();
+        eliteProEnemyFactory = new EliteProEnemyFactory();
+        bossEnemyFactory = new BossEnemyFactory();
 
         this.timer = new Timer("game-action-timer", true);
 
@@ -71,21 +99,8 @@ public class Game extends JPanel {
             @Override
             public void run() {
 
-                enemySpawnCounter++;
-                if (enemySpawnCounter >=enemySpawnCycle) {
-                    enemySpawnCounter = 0;
-                    // 产生普通敌机
-                    // TODO: change the way of creating enemy(use Factory Method Pattern)
-                    if (enemyAircrafts.size() < enemyMaxNumber) {
-                        enemyAircrafts.add(new MobEnemy(
-                                (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth())),
-                                (int) (Math.random() * Main.WINDOW_HEIGHT * 0.05),
-                                0,
-                                10,
-                                30
-                        ));
-                    }
-                }
+                // create enemy
+                enemySpawnAction();
 
                 // 飞机发射子弹
                 shootAction();
@@ -112,6 +127,61 @@ public class Game extends JPanel {
     //      Action 各部分
     //***********************
 
+    private void enemySpawnAction() {
+        enemySpawnCounter++;
+        if (enemySpawnCounter < enemySpawnCycle) {
+            return;
+        }
+        enemySpawnCounter = 0;
+
+        if (shouldSpawnBoss()) {
+            enemyAircrafts.add(createBossEnemy());
+            bossActive = true;
+            nextBossScore += BOSS_SCORE_THRESHOLD;
+            return;
+        }
+
+        if (enemyAircrafts.size() >= enemyMaxNumber) {
+            return;
+        }
+
+        enemyAircrafts.add(createEnemy());
+    }
+
+    private AbstractAircraft createEnemy() {
+        int maxEnemyWidth = Math.max(
+                Math.max(ImageManager.MOB_ENEMY_IMAGE.getWidth(), ImageManager.ELITE_ENEMY_IMAGE.getWidth()),
+                Math.max(ImageManager.ELITE_PLUS_ENEMY_IMAGE.getWidth(), ImageManager.ELITE_PRO_ENEMY_IMAGE.getWidth())
+        );
+        int locationX = maxEnemyWidth / 2 + (int) (Math.random() * (Main.WINDOW_WIDTH - maxEnemyWidth));
+        int locationY = (int) (Math.random() * Main.WINDOW_HEIGHT * 0.05);
+        EnemyFactory enemyFactory = selectEnemyFactory();
+        return enemyFactory.createEnemy(locationX, locationY);
+    }
+
+    private AbstractAircraft createBossEnemy() {
+        int bossWidth = ImageManager.BOSS_ENEMY_IMAGE.getWidth();
+        int locationX = bossWidth / 2 + (int) (Math.random() * (Main.WINDOW_WIDTH - bossWidth));
+        return bossEnemyFactory.createEnemy(locationX, bossWidth / 2);
+    }
+
+    private boolean shouldSpawnBoss() {
+        return !bossActive && score >= nextBossScore;
+    }
+
+    private EnemyFactory selectEnemyFactory() {
+        double random = Math.random();
+        if (random < MOB_ENEMY_RATE) {
+            return mobEnemyFactory;
+        }
+        if (random < MOB_ENEMY_RATE + ELITE_ENEMY_RATE) {
+            return eliteEnemyFactory;
+        }
+        if (random < MOB_ENEMY_RATE + ELITE_ENEMY_RATE + ELITE_PLUS_ENEMY_RATE) {
+            return elitePlusEnemyFactory;
+        }
+        return eliteProEnemyFactory;
+    }
     private void shootAction() {
         shootCounter++;
         if (shootCounter >= shootCycle) {

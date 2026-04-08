@@ -5,7 +5,7 @@ import edu.hitsz.aircraft.BossEnemy;
 
 public class BossEnemyFactory implements EnemyFactory {
     @Override
-    public AbstractAircraft createEnemy(int locationX, int locationY, int SpeedX, int SpeedY, int hp) {
-        return new BossEnemy(locationX, locationY, SpeedX, SpeedY, hp);
+    public AbstractAircraft createEnemy(int locationX, int locationY) {
+        return new BossEnemy(locationX, locationY, 2, 0, 300);
     }
 }
