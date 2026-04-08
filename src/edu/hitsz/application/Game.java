@@ -48,11 +48,8 @@ public class Game extends JPanel {
     private boolean gameOverFlag = false;
 
     public Game() {
-        heroAircraft = new HeroAircraft(
-                Main.WINDOW_WIDTH / 2,
-                Main.WINDOW_HEIGHT - ImageManager.HERO_IMAGE.getHeight() ,
-                0, 0, 100);
 
+        heroAircraft = HeroAircraft.getInstance();
         enemyAircrafts = new LinkedList<>();
         heroBullets = new LinkedList<>();
         enemyBullets = new LinkedList<>();
@@ -78,6 +75,7 @@ public class Game extends JPanel {
                 if (enemySpawnCounter >=enemySpawnCycle) {
                     enemySpawnCounter = 0;
                     // 产生普通敌机
+                    // TODO: change the way of creating enemy(use Factory Method Pattern)
                     if (enemyAircrafts.size() < enemyMaxNumber) {
                         enemyAircrafts.add(new MobEnemy(
                                 (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth())),
@@ -120,7 +118,7 @@ public class Game extends JPanel {
             shootCounter = 0;
             //英雄机射击
             heroBullets.addAll(heroAircraft.shoot());
-            // TODO 敌机射击
+            // TODO: 敌机射击
         }
     }
 
@@ -147,7 +145,7 @@ public class Game extends JPanel {
      * 3. 英雄获得补给
      */
     private void crashCheckAction() {
-        // TODO 敌机子弹攻击英雄机
+        // TODO: 敌机子弹攻击英雄机
 
         // 英雄子弹攻击敌机
         for (BaseBullet bullet : heroBullets) {
@@ -166,7 +164,7 @@ public class Game extends JPanel {
                     enemyAircraft.decreaseHp(bullet.getPower());
                     bullet.vanish();
                     if (enemyAircraft.notValid()) {
-                        // TODO 获得分数，产生道具补给
+                        // TODO: 获得分数，产生道具补给
                         score += 10;
                     }
                 }
@@ -178,7 +176,7 @@ public class Game extends JPanel {
             }
         }
 
-        // Todo: 我方获得道具，道具生效
+        // TODO: 我方获得道具，道具生效
 
     }
 
@@ -192,7 +190,7 @@ public class Game extends JPanel {
         enemyBullets.removeIf(AbstractFlyingObject::notValid);
         heroBullets.removeIf(AbstractFlyingObject::notValid);
         enemyAircrafts.removeIf(AbstractFlyingObject::notValid);
-        // Todo: 删除无效道具
+        // TODO: 删除无效道具
     }
 
     /**
@@ -232,7 +230,7 @@ public class Game extends JPanel {
         paintImageWithPositionRevised(g, heroBullets);
         paintImageWithPositionRevised(g, enemyAircrafts);
 
-        // Todo: 绘制道具
+        // TODO: 绘制道具
 
         g.drawImage(ImageManager.HERO_IMAGE, heroAircraft.getLocationX() - ImageManager.HERO_IMAGE.getWidth() / 2,
                 heroAircraft.getLocationY() - ImageManager.HERO_IMAGE.getHeight() / 2, null);
