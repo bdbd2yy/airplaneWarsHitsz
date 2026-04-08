@@ -9,7 +9,7 @@ import edu.hitsz.bullet.HeroBullet;
 import java.util.LinkedList;
 import java.util.List;
 
-public class EliteProEnemy extends AbstractAircraft {
+public class EliteProEnemy extends AbstractEnemy {
 
     //每次射击发射子弹数量
     private int shootNum = 1;
@@ -21,7 +21,7 @@ public class EliteProEnemy extends AbstractAircraft {
     private int direction = -1;
 
     public EliteProEnemy(int locationX, int locationY, int speedX, int speedY, int hp) {
-        super(locationX, locationY, speedX, speedY, hp);
+        super(locationX, locationY, speedX, speedY, hp, 50);
     }
 
     @Override

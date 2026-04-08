@@ -16,7 +16,7 @@ public abstract class AbstractAircraft extends AbstractFlyingObject {
     //最大生命值
     protected int maxHp;
     protected int hp;
-    protected int shootnum;
+    protected int shootNum;
     protected int direction = 1;
     protected int power = 10;
 
@@ -53,7 +53,7 @@ public abstract class AbstractAircraft extends AbstractFlyingObject {
     }
 
     public int getShootNum() {
-        return shootnum;
+        return shootNum;
     }
 
     public int getDirection() {

@@ -5,31 +5,32 @@ import edu.hitsz.aircraft.AbstractAircraft;
 
 import edu.hitsz.application.Main;
 import edu.hitsz.bullet.HeroBullet;
+import edu.hitsz.strategy.CircularShootStrategy;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class BossEnemy extends AbstractAircraft {
-
-    //每次射击发射子弹数量
-    private int shootNum = 1;
-
-    //子弹威力
-    private int power = 30;
+public class BossEnemy extends AbstractEnemy {
 
     //子弹射击方向 (向上发射：-1，向下发射：1)
     private int direction = -1;
 
     public BossEnemy(int locationX, int locationY, int speedX, int speedY, int hp) {
-        super(locationX, locationY, speedX, speedY, hp);
+        super(locationX, locationY, speedX, speedY, hp, 100);
+        // 子弹威力
+        this.power = 30;
+        // 每次发射子弹数量
+        this.shootNum = 20;
+        SetStrategy(new CircularShootStrategy());
     }
 
+    // 取消纵向速度
     @Override
     public void forward() {
-        super.forward();
-        // 判定 y 轴向下飞行出界
-        if (locationY >= Main.WINDOW_HEIGHT ) {
-            vanish();
+        locationX += speedX;
+        if (locationX <= 0 || locationX >= Main.WINDOW_WIDTH) {
+            // 横向超出边界后反向
+            speedX = -speedX;
         }
     }
 

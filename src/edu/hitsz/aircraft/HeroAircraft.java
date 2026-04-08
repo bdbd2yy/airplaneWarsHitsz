@@ -67,4 +67,12 @@ public class HeroAircraft extends AbstractAircraft {
         return res;
     }
 
+    @Override
+    /**
+     * 产生子弹
+     * @return 英雄子弹
+     * **/
+    public BaseBullet createBullet(int locationX, int locationY, int speedX, int speedY, int power) {
+        return new HeroBullet(locationX, locationY, speedX, speedY, power);
+    }
 }
