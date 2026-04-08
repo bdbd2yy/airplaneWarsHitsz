@@ -3,17 +3,16 @@ package edu.hitsz.aircraft;
 import edu.hitsz.application.Main;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.bullet.EnemyBullet;
-import edu.hitsz.aircraft.AbstractAircraft;
-import java.util.List;
 
 /**
  * 敌机的抽象父类
+ * 
  * @author hitsz
  */
-// TODO: move the enemys to AbstractEnemy class
+// TODO: add supplies to Enemy
 public abstract class AbstractEnemy extends AbstractAircraft {
 
-    //最大生命值
+    // 最大生命值
     protected int maxHp;
     protected int hp;
 
@@ -35,10 +34,9 @@ public abstract class AbstractEnemy extends AbstractAircraft {
     public int getScore() {
         return score;
     }
+
     @Override
     public BaseBullet createBullet(int locationX, int locationY, int speedX, int speedY, int power) {
         return new EnemyBullet(locationX, locationY, speedX, speedY, power);
     }
 }
-
-

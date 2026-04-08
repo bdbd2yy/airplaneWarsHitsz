@@ -8,12 +8,14 @@ import java.util.List;
 
 /**
  * 所有种类飞机的抽象父类
+ * 
  * @author hitsz
  */
 public abstract class AbstractAircraft extends AbstractFlyingObject {
 
-    ShootStrategy strategy = new NoShootStrategy();
-    //最大生命值
+    // the context's shootStrategy
+    private ShootStrategy shootStrategy = new NoShootStrategy();
+    // 最大生命值
     protected int maxHp;
     protected int hp;
     protected int shootNum;
@@ -26,10 +28,10 @@ public abstract class AbstractAircraft extends AbstractFlyingObject {
         this.maxHp = hp;
     }
 
-    public void decreaseHp(int decrease){
+    public void decreaseHp(int decrease) {
         hp -= decrease;
-        if(hp <= 0){
-            hp=0;
+        if (hp <= 0) {
+            hp = 0;
             vanish();
         }
     }
@@ -38,22 +40,26 @@ public abstract class AbstractAircraft extends AbstractFlyingObject {
         return hp;
     }
 
-
     /**
      * 飞机射击方法
-     * @return
-     *  可射击对象需实现，返回子弹列表
-     *  非可射击对象空实现，返回空列表
+     *
+     * @return 策略模式下各自策略的 shoot 方法
      */
-    public abstract List<BaseBullet> shoot();
+    public List<BaseBullet> shoot() {
+        return shootStrategy.shoot(this);
+    }
 
     // set the shoot strategy
-    public void SetStrategy(ShootStrategy strategy) {
-        this.strategy = strategy;
+    public void setShootStrategy(ShootStrategy strategy) {
+        this.shootStrategy = strategy;
     }
 
     public int getShootNum() {
         return shootNum;
+    }
+
+    public void setShootNum(int shootNum) {
+        this.shootNum = shootNum;
     }
 
     public int getDirection() {
@@ -66,5 +72,3 @@ public abstract class AbstractAircraft extends AbstractFlyingObject {
 
     public abstract BaseBullet createBullet(int locationX, int locationY, int speedX, int speedY, int power);
 }
-
-
