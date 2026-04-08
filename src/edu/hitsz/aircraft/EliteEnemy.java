@@ -10,6 +10,7 @@ public class EliteEnemy extends AbstractEnemy {
 
     public EliteEnemy(int locationX, int locationY, int speedX, int speedY, int hp) {
         super(locationX, locationY, speedX, speedY, hp, 20);
+        this.power = 15;
         setShootStrategy(new StraightShootStrategy());
     }
 
