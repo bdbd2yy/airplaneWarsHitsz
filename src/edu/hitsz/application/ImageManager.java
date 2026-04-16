@@ -5,6 +5,15 @@ import edu.hitsz.aircraft.HeroAircraft;
 import edu.hitsz.aircraft.MobEnemy;
 import edu.hitsz.bullet.EnemyBullet;
 import edu.hitsz.bullet.HeroBullet;
+import edu.hitsz.aircraft.BossEnemy;
+import edu.hitsz.aircraft.EliteEnemy;
+import edu.hitsz.aircraft.ElitePlusEnemy;
+import edu.hitsz.aircraft.EliteProEnemy;
+import edu.hitsz.prop.BloodSupply;
+import edu.hitsz.prop.BombSupply;
+import edu.hitsz.prop.FirePlusSupply;
+import edu.hitsz.prop.FireSupply;
+import edu.hitsz.prop.FreezeSupply;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -12,11 +21,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import edu.hitsz.aircraft.EliteEnemy;
-import edu.hitsz.aircraft.ElitePlusEnemy;
-import edu.hitsz.aircraft.BossEnemy;
-import edu.hitsz.aircraft.EliteProEnemy;
 
 /**
  * 综合管理图片的加载，访问
@@ -72,6 +76,11 @@ public class ImageManager {
             CLASSNAME_IMAGE_MAP.put(BossEnemy.class.getName(), BOSS_ENEMY_IMAGE);
             CLASSNAME_IMAGE_MAP.put(HeroBullet.class.getName(), HERO_BULLET_IMAGE);
             CLASSNAME_IMAGE_MAP.put(EnemyBullet.class.getName(), ENEMY_BULLET_IMAGE);
+            CLASSNAME_IMAGE_MAP.put(BloodSupply.class.getName(), BLOOD_SUPPLY_IMAGE);
+            CLASSNAME_IMAGE_MAP.put(FireSupply.class.getName(), FIRE_SUPPLY_IMAGE);
+            CLASSNAME_IMAGE_MAP.put(FirePlusSupply.class.getName(), FIRE_PLUS_SUPPLY_IMAGE);
+            CLASSNAME_IMAGE_MAP.put(BombSupply.class.getName(), BOMB_SUPPLY_IMAGE);
+            CLASSNAME_IMAGE_MAP.put(FreezeSupply.class.getName(), FREEZE_SUPPLY_IMAGE);
 
         } catch (IOException e) {
             e.printStackTrace();

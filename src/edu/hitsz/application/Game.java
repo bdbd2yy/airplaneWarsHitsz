@@ -20,6 +20,7 @@ import edu.hitsz.factory.ElitePlusEnemyFactory;
 import edu.hitsz.factory.EliteProEnemyFactory;
 import edu.hitsz.factory.EnemyFactory;
 import edu.hitsz.factory.MobEnemyFactory;
+import edu.hitsz.prop.AbstractSupply;
 
 /**
  * 游戏主面板，游戏启动
@@ -54,6 +55,8 @@ public class Game extends JPanel {
     private final List<BaseBullet> heroBullets;
     // 敌机子弹
     private final List<BaseBullet> enemyBullets;
+    // 道具
+    private final List<AbstractSupply> supplies;
 
     // 是否激活 boss
     private boolean bossActive = false;
@@ -78,9 +81,12 @@ public class Game extends JPanel {
     public Game() {
 
         heroAircraft = HeroAircraft.getInstance();
+        heroAircraft.reset();
+
         enemyAircrafts = new LinkedList<>();
         heroBullets = new LinkedList<>();
         enemyBullets = new LinkedList<>();
+        supplies = new LinkedList<>();
 
         // 启动英雄机鼠标监听
         new HeroController(this, heroAircraft);
@@ -241,7 +247,7 @@ public class Game extends JPanel {
             if (bullet.notValid()) {
                 continue;
             }
-            for (AbstractAircraft enemyAircraft : enemyAircrafts) {
+            for (AbstractEnemy enemyAircraft : enemyAircrafts) {
                 if (enemyAircraft.notValid()) {
                     // 已被其他子弹击毁的敌机，不再检测
                     // 避免多个子弹重复击毁同一敌机的判定
@@ -253,8 +259,7 @@ public class Game extends JPanel {
                     enemyAircraft.decreaseHp(bullet.getPower());
                     bullet.vanish();
                     if (enemyAircraft.notValid()) {
-                        // TODO: 获得分数，产生道具补给
-                        score += 10;
+                        handleEnemyDestoried(enemyAircraft);
                     }
                 }
                 // 英雄机 与 敌机 相撞，均损毁
@@ -265,7 +270,15 @@ public class Game extends JPanel {
             }
         }
 
-        // TODO: 我方获得道具，道具生效
+        for (AbstractSupply supply : supplies) {
+            if (supply.notValid()) {
+                continue;
+            }
+            if (heroAircraft.crash(supply) || supply.crash(heroAircraft)) {
+                supply.activate(heroAircraft);
+                supply.vanish();
+            }
+        }
 
     }
 
@@ -279,7 +292,7 @@ public class Game extends JPanel {
         enemyBullets.removeIf(AbstractFlyingObject::notValid);
         heroBullets.removeIf(AbstractFlyingObject::notValid);
         enemyAircrafts.removeIf(AbstractFlyingObject::notValid);
-        // TODO: 删除无效道具
+        supplies.removeIf(AbstractFlyingObject::notValid);
     }
 
     /**
@@ -293,6 +306,14 @@ public class Game extends JPanel {
             System.out.println("Game Over!");
         }
     };
+
+    private void handleEnemyDestoried(AbstractEnemy enemyAircraft) {
+        score += enemyAircraft.getScore();
+        supplies.addAll(enemyAircraft.generateSupplies());
+        if (enemyAircraft instanceof BossEnemy) {
+            bossActive = true;
+        }
+    }
 
     // ***********************
     // Paint 各部分
@@ -318,8 +339,8 @@ public class Game extends JPanel {
         paintImageWithPositionRevised(g, enemyBullets);
         paintImageWithPositionRevised(g, heroBullets);
         paintImageWithPositionRevised(g, enemyAircrafts);
-
-        // TODO: 绘制道具
+        // 绘制道具
+        paintImageWithPositionRevised(g, supplies);
 
         g.drawImage(ImageManager.HERO_IMAGE, heroAircraft.getLocationX() - ImageManager.HERO_IMAGE.getWidth() / 2,
                 heroAircraft.getLocationY() - ImageManager.HERO_IMAGE.getHeight() / 2, null);
